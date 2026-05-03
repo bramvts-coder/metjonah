@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Met Jonah</title>
+<style>
+  :root {
+    --cream: #FAF6E8;
+    --cream-deep: #F0E8D0;
+    --sage: #7C8B5C;
+    --sage-deep: #4A5538;
+    --sage-soft: #B5C2A0;
+    --mustard: #D4A24A;
+    --mustard-soft: #F0D78A;
+    --honey: #E8C275;
+    --ink: #1F2218;
+    --ink-soft: #5A6055;
+    --line: #E0D8BE;
+    --green-free: #5A8C4F;
+    --green-soft: #DCEACE;
+    --shadow-soft: 0 4px 20px rgba(74, 85, 56, .08);
+    --shadow-card: 0 6px 24px rgba(74, 85, 56, .10);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: linear-gradient(180deg, #FAF6E8 0%, #F0E8D0 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 24px 20px 80px; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #7C8B5C 0%, #4A5538 100%);
+    color: var(--cream);
+    border-radius: 28px;
+    padding: 30px 30px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, var(--mustard-soft) 0%, transparent 70%);
+    opacity: .25;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .header-content { position: relative; z-index: 2; min-width: 0; max-width: 65%; }
+  .header-photo {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 55%;
+    z-index: 0;
+    opacity: 0.6;
+    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to left, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .header-photo img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+  .header-photo.no-photo { display: none; }
+  .place {
+    font-size: 1.1rem;
+    color: var(--mustard-soft);
+    margin: 0 0 6px 0;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0 0 22px 0;
+    font-size: 2.6rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+  h1 .accent {
+    background: linear-gradient(90deg, #F0D78A 0%, #E8C275 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .weather {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .weather-day {
+    background: rgba(250, 246, 232, 0.15);
+    border: 1px solid rgba(250, 246, 232, 0.25);
+    border-radius: 18px;
+    padding: 14px 16px;
+  }
+  .weather-label {
+    font-size: .9rem;
+    color: var(--mustard-soft);
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .weather-temp {
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--cream);
+  }
+  .weather-icon { font-size: 1.5rem; margin-right: 8px; }
+  .weather-desc {
+    font-size: .9rem;
+    color: var(--cream);
+    opacity: .85;
+    margin-top: 4px;
+  }
+  .weather-error {
+    font-size: .92rem;
+    color: var(--cream);
+    opacity: .85;
+    line-height: 1.4;
+  }
+
+  /* SECTION */
+  .section-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--sage-deep);
+    font-weight: 700;
+    margin: 28px 0 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, var(--sage-soft) 0%, transparent 100%);
+  }
+
+  /* FILTERS */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+  .chip {
+    background: #FFFFFF;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    padding: 11px 18px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all .15s ease;
+    font-family: inherit;
+  }
+  .chip:hover { border-color: var(--sage); }
+  .chip.active {
+    background: linear-gradient(135deg, var(--sage) 0%, var(--sage-deep) 100%);
+    color: var(--cream);
+    border-color: var(--sage-deep);
+  }
+  .chip.binnenkort {
+    background: linear-gradient(135deg, var(--mustard-soft) 0%, var(--honey) 100%);
+    border-color: var(--mustard);
+    color: #6B4F1A;
+  }
+  .chip.binnenkort.active {
+    background: linear-gradient(135deg, var(--mustard) 0%, #B88532 100%);
+    color: #FFF;
+    border-color: #B88532;
+  }
+
+  /* CARDS */
+  .cards { display: grid; gap: 18px; }
+  .card {
+    background: #FFFFFF;
+    border-radius: 22px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow-card);
+    display: grid;
+    gap: 12px;
+    transition: transform .15s ease;
+    position: relative;
+  }
+  .card.dated { border-left: 6px solid var(--mustard); }
+  .card:hover { transform: translateY(-2px); }
+  .card-name {
+    margin: 0;
+    font-size: 1.55rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .when-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--mustard-soft) 0%, var(--honey) 100%);
+    color: #6B4F1A;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: .95rem;
+    font-weight: 700;
+    width: fit-content;
+  }
+  .price {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #FFF1E0 0%, #FFE0B8 100%);
+    color: #8A4F0A;
+    font-weight: 700;
+    font-size: 1rem;
+    width: fit-content;
+  }
+  .price.free {
+    background: linear-gradient(135deg, var(--green-soft) 0%, #B8D9A0 100%);
+    color: var(--green-free);
+    font-size: 1.4rem;
+    padding: 10px 22px;
+    font-weight: 800;
+    letter-spacing: .03em;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 1.1rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .desc {
+    margin: 0;
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .links a {
+    color: var(--sage-deep);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: .98rem;
+    border-bottom: 2px solid var(--sage-soft);
+    padding-bottom: 1px;
+  }
+  .links a:hover { border-bottom-color: var(--sage-deep); }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: .9rem;
+    color: var(--sage-deep);
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-weight: 500;
+  }
+
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: .9rem;
+  }
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-size: 1.15rem;
+    background: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    h1 { font-size: 2rem; }
+    header { padding: 24px 22px; border-radius: 22px; min-height: 200px; }
+    .header-content { max-width: 70%; }
+    .header-photo { width: 60%; opacity: 0.5; }
+    .weather { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .weather-temp { font-size: 1.6rem; }
+    .wrap { padding: 16px 14px 60px; }
+    .card { padding: 20px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-content">
+      <p class="place" id="place">Berlicum</p>
+      <h1>Met <span class="accent">Jonah</span> op pad</h1>
+      <div class="weather" id="weather">
+        <div class="weather-day"><div class="weather-label">Vandaag</div><div class="weather-temp">…</div></div>
+        <div class="weather-day"><div class="weather-label">Morgen</div><div class="weather-temp">…</div></div>
+      </div>
+    </div>
+    <div class="header-photo" id="headerPhoto">
+      <img src="jonah.png" alt="" onerror="document.getElementById('headerPhoto').classList.add('no-photo');">
+    </div>
+  </header>
+
+  <h2 class="section-title">🔍 Filter</h2>
+  <div class="filters" id="filters"></div>
+
+  <h2 class="section-title" id="cardsTitle">🌟 Activiteiten</h2>
+  <div class="cards" id="cards"></div>
+
+  <footer>
+    <p id="updated">Laatst bijgewerkt: …</p>
+  </footer>
+
+</div>
+
+<!-- ACTIVITEITEN DATA - bewerk deze sectie om activiteiten toe te voegen of aan te passen -->
+<script type="application/json" id="eventsData">
+{
+  "lastUpdated": "2026-05-03",
+  "origin": {
+    "name": "Berlicum, Pijlkruid",
+    "lat": 51.6618,
+    "lon": 5.4287
+  },
+  "categories": [
+    {
+      "id": "all",
+      "label": "Alles",
+      "icon": "🌟"
+    },
+    {
+      "id": "binnenkort",
+      "label": "Binnenkort",
+      "icon": "🕒"
+    },
+    {
+      "id": "free",
+      "label": "Gratis",
+      "icon": "💚"
+    },
+    {
+      "id": "animals",
+      "label": "Dieren",
+      "icon": "🐄"
+    },
+    {
+      "id": "playground",
+      "label": "Speeltuinen",
+      "icon": "🛝"
+    },
+    {
+      "id": "water",
+      "label": "Water",
+      "icon": "💧"
+    },
+    {
+      "id": "nature",
+      "label": "Natuur",
+      "icon": "🌳"
+    },
+    {
+      "id": "indoor",
+      "label": "Indoor",
+      "icon": "🏠"
+    },
+    {
+      "id": "markets",
+      "label": "Markten",
+      "icon": "🛍️"
+    },
+    {
+      "id": "culture",
+      "label": "Cultuur",
+      "icon": "🎭"
+    },
+    {
+      "id": "events",
+      "label": "Pretparken",
+      "icon": "🎢"
+    }
+  ],
+  "activities": [
+    {
+      "id": "wamberg",
+      "name": "Landgoed De Wamberg",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 10,
+        "carMin": 5,
+        "km": 2
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Landgoed+De+Wamberg+Berlicum",
+      "website": "https://www.brabantslandschap.nl/",
+      "description": "Klein natuurgebied vlakbij huis. Korte wandeling, veel groen. Perfect voor een snelle uitje."
+    },
+    {
+      "id": "aa-rivier-berlicum",
+      "name": "Wandeling langs de Aa",
+      "categories": [
+        "nature",
+        "free",
+        "water"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 5,
+        "carMin": 5,
+        "km": 1
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Aa+rivier+Berlicum+wandeling",
+      "website": "https://www.routeyou.com/nl-nl/location/view/47844921",
+      "description": "Vlakke wandelroute langs de rivier de Aa. Geschikt voor kinderwagen. Eendjes spotten onderweg."
+    },
+    {
+      "id": "speeltuin-berlicum",
+      "name": "Speeltuintje in Berlicum",
+      "categories": [
+        "playground",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 5,
+        "carMin": 3,
+        "km": 1
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=speeltuin+Berlicum",
+      "website": "https://www.google.com/search?q=speeltuinen+Berlicum",
+      "description": "Verschillende speeltuintjes in Berlicum zelf. Verifieer welke nu het leukst is voor Jonah."
+    },
+    {
+      "id": "bibliotheek-berlicum",
+      "name": "Bibliotheek Berlicum",
+      "categories": [
+        "indoor",
+        "free",
+        "culture"
+      ],
+      "free": true,
+      "priceText": "Gratis voor kinderen",
+      "distance": {
+        "bikeMin": 5,
+        "carMin": 3,
+        "km": 1
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Bibliotheek+Berlicum",
+      "website": "https://www.bibliotheekmeierijstad.nl/",
+      "description": "Lokale bibliotheek met kinderhoek. Vlakbij huis. Top regenactiviteit."
+    },
+    {
+      "id": "kasteel-heeswijk",
+      "name": "Kasteel Heeswijk",
+      "categories": [
+        "culture"
+      ],
+      "free": false,
+      "priceText": "vanaf €13 p.p.",
+      "distance": {
+        "bikeMin": 25,
+        "carMin": 12,
+        "km": 7
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Kasteel+Heeswijk",
+      "website": "https://www.kasteelheeswijk.com/",
+      "description": "Sprookjeskasteel met grachten en parktuin. Buitenkant en park zijn gratis te bezoeken."
+    },
+    {
+      "id": "heeswijkse-bossen",
+      "name": "Heeswijkse Bossen",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 25,
+        "carMin": 12,
+        "km": 8
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Heeswijkse+Bossen",
+      "website": "https://www.brabantslandschap.nl/",
+      "description": "Bossen rondom Kasteel Heeswijk. Vlakke paden, kinderwagen-vriendelijk."
+    },
+    {
+      "id": "rosmalen-park",
+      "name": "Park De Groote Wielen",
+      "categories": [
+        "nature",
+        "playground",
+        "water",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 30,
+        "carMin": 12,
+        "km": 9
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=De+Groote+Wielen+Rosmalen",
+      "website": "https://www.s-hertogenbosch.nl/",
+      "description": "Recreatiegebied met meer, speeltuintjes en wandelpaden. Veel ruimte."
+    },
+    {
+      "id": "speeltuin-rosmalen",
+      "name": "Speeltuin Rosmalen",
+      "categories": [
+        "playground",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=speeltuin+Rosmalen",
+      "website": "https://www.google.com/search?q=speeltuin+rosmalen",
+      "description": "Publieke speeltuin in Rosmalen. Verifieer locatie en faciliteiten."
+    },
+    {
+      "id": "hooiberg",
+      "name": "Kinderboerderij De Hooiberg",
+      "categories": [
+        "animals",
+        "playground",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 30,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Kinderboerderij+De+Hooiberg+Den+Bosch",
+      "website": "https://www.kinderboerderijdehooiberg.nl/",
+      "description": "Geiten, schapen, varkens en kippen aaien en voeren. Speeltuintje aanwezig."
+    },
+    {
+      "id": "bossche-broek",
+      "name": "Wandelen in het Bossche Broek",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Bossche+Broek",
+      "website": "https://www.brabantslandschap.nl/ontdek-de-natuur/natuurgebieden/het-bossche-broek/",
+      "description": "Mooi natuurgebied naast Den Bosch. Vlakke paden, vaak koeien en vogels te zien."
+    },
+    {
+      "id": "engelermeer",
+      "name": "Engelermeer",
+      "categories": [
+        "water",
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 45,
+        "carMin": 20,
+        "km": 12
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Engelermeer",
+      "website": "https://www.visitdenbosch.nl/locaties/2056396716/engelermeer",
+      "description": "Recreatieplas met strandje. In de zomer heerlijk pootjebaden."
+    },
+    {
+      "id": "binnendieze",
+      "name": "Binnendieze rondvaart",
+      "categories": [
+        "water",
+        "culture"
+      ],
+      "free": false,
+      "priceText": "€11,50 p.p., kinderen tot 4 gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Binnendieze+rondvaart+Den+Bosch",
+      "website": "https://www.kringvrienden.nl/",
+      "description": "Fluisterboot door het oude grachtenstelsel van Den Bosch. Rustig en visueel mooi."
+    },
+    {
+      "id": "sint-jan",
+      "name": "Sint-Janskathedraal",
+      "categories": [
+        "culture",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis (toren betaald)",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Sint+Janskathedraal+Den+Bosch",
+      "website": "https://www.sint-jan.nl/",
+      "description": "Indrukwekkende kathedraal. Vrij te bezoeken. Buitenkant heeft engelen en gargoyles."
+    },
+    {
+      "id": "noordbrabants-museum",
+      "name": "Het Noordbrabants Museum",
+      "categories": [
+        "indoor",
+        "culture"
+      ],
+      "free": false,
+      "priceText": "€16, kinderen tot 18 gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Noordbrabants+Museum+Den+Bosch",
+      "website": "https://www.hetnoordbrabantsmuseum.nl/",
+      "description": "Museum met regelmatig kindvriendelijke programma's. Kinderen tot 18 zijn gratis. Ideaal bij regen."
+    },
+    {
+      "id": "stedelijk-museum-db",
+      "name": "Stedelijk Museum Den Bosch",
+      "categories": [
+        "indoor",
+        "culture"
+      ],
+      "free": false,
+      "priceText": "€14, kinderen tot 18 gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Stedelijk+Museum+Den+Bosch",
+      "website": "https://www.stedelijkmuseumshertogenbosch.nl/",
+      "description": "Moderne kunst en design. Indoor activiteit. Verifieer of er een familieprogramma is."
+    },
+    {
+      "id": "jheronimus-bosch",
+      "name": "Jheronimus Bosch Art Center",
+      "categories": [
+        "indoor",
+        "culture"
+      ],
+      "free": false,
+      "priceText": "€11, kinderen tot 12 gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Jheronimus+Bosch+Art+Center",
+      "website": "https://www.jheronimusbosch-artcenter.nl/",
+      "description": "Speelse expositie over Jeroen Bosch in een oude kerk. Visueel veel te ontdekken."
+    },
+    {
+      "id": "bibliotheek-db",
+      "name": "Bibliotheek Den Bosch",
+      "categories": [
+        "indoor",
+        "free",
+        "culture"
+      ],
+      "free": true,
+      "priceText": "Gratis voor kinderen",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Bibliotheek+s-Hertogenbosch",
+      "website": "https://www.bibliotheekdenbosch.nl/",
+      "description": "Grote kinderafdeling. Lekker plekje bij regen. Soms voorleesuurtjes - check website."
+    },
+    {
+      "id": "markt-db",
+      "name": "Markt op de Markt - Den Bosch",
+      "categories": [
+        "markets",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Markt+Den+Bosch",
+      "website": "https://www.s-hertogenbosch.nl/in-de-stad/markten",
+      "description": "Wekelijkse markt op woensdag en zaterdag. Bloemen, kaas, fruit, vis."
+    },
+    {
+      "id": "boerenmarkt-db",
+      "name": "Boerenmarkt 's-Hertogenbosch",
+      "categories": [
+        "markets",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Boerenmarkt+Den+Bosch",
+      "website": "https://www.boerenmarktdenbosch.nl/",
+      "description": "Streekproducten, biologisch. Op de Parade. Verifieer dag/tijd via website."
+    },
+    {
+      "id": "kinderboerderij-zuiderpark",
+      "name": "Kinderboerderij Zuiderpark Den Bosch",
+      "categories": [
+        "animals",
+        "free",
+        "playground"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 11
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Kinderboerderij+Zuiderpark+Den+Bosch",
+      "website": "https://www.s-hertogenbosch.nl/",
+      "description": "Kleine kinderboerderij in een park. Geiten, kippen, konijntjes."
+    },
+    {
+      "id": "stationspark",
+      "name": "Stationspark Den Bosch",
+      "categories": [
+        "playground",
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 11
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Stationspark+Den+Bosch",
+      "website": "https://www.s-hertogenbosch.nl/",
+      "description": "Park bij het station met wandelpaden en groene ruimte."
+    },
+    {
+      "id": "monkey-town-db",
+      "name": "Monkey Town Den Bosch",
+      "categories": [
+        "indoor",
+        "playground"
+      ],
+      "free": false,
+      "priceText": "vanaf €10 p.p.",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 11
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Monkey+Town+Den+Bosch",
+      "website": "https://www.monkeytown.eu/",
+      "description": "Indoor speelparadijs. Verifieer of de Den Bosch vestiging open is via de website."
+    },
+    {
+      "id": "bossche-bol",
+      "name": "Bossche bol bij Jan de Groot",
+      "categories": [
+        "culture"
+      ],
+      "free": false,
+      "priceText": "ca. €4 per bol",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Jan+de+Groot+banketbakker+Den+Bosch",
+      "website": "https://www.jandegrootkleinrood.nl/",
+      "description": "Iconische Bossche bol. Niet voor peuters, maar gezellig voor opa/oma. Combineer met stadswandeling."
+    },
+    {
+      "id": "vughtse-hei",
+      "name": "Vughtse Hei",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 50,
+        "carMin": 22,
+        "km": 15
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Vughtse+Hei",
+      "website": "https://www.brabantslandschap.nl/",
+      "description": "Heidegebied met paden door bos en hei. Mooi in alle seizoenen."
+    },
+    {
+      "id": "kinderboerderij-vught",
+      "name": "Kinderboerderij Vught",
+      "categories": [
+        "animals",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 50,
+        "carMin": 22,
+        "km": 15
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Kinderboerderij+Vught",
+      "website": "https://www.google.com/search?q=kinderboerderij+Vught",
+      "description": "Lokale kinderboerderij in Vught. Verifieer openingstijden via website."
+    },
+    {
+      "id": "speeltuin-vught",
+      "name": "Speeltuin Vught (centrum)",
+      "categories": [
+        "playground",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 45,
+        "carMin": 20,
+        "km": 13
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=speeltuin+Vught",
+      "website": "https://www.google.com/search?q=speeltuinen+Vught",
+      "description": "Verschillende publieke speeltuinen in Vught. Verifieer welke het dichtst bij is."
+    },
+    {
+      "id": "helvoirtse-bossen",
+      "name": "Helvoirtse Bossen",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 50,
+        "carMin": 22,
+        "km": 16
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Helvoirtse+Bossen",
+      "website": "https://www.brabantslandschap.nl/",
+      "description": "Bosgebied tussen Helvoirt en Vught. Verschillende wandelroutes."
+    },
+    {
+      "id": "lithse-ham",
+      "name": "Strandbad Lithse Ham",
+      "categories": [
+        "water",
+        "free",
+        "nature"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 60,
+        "carMin": 25,
+        "km": 22
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Lithse+Ham",
+      "website": "https://www.lithseham.nl/",
+      "description": "Recreatieplas aan de Maas. Strand, ondiep water, ideaal voor kleintjes. Vooral zomer."
+    },
+    {
+      "id": "geffense-plas",
+      "name": "Geffense Plas",
+      "categories": [
+        "water",
+        "free",
+        "nature"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 50,
+        "carMin": 20,
+        "km": 12
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Geffense+Plas",
+      "website": "https://www.visitnoordoostbrabant.nl/locaties/2076478732/geffense-plas",
+      "description": "Recreatieplas met strandje. Lekker peuteren in de zomer."
+    },
+    {
+      "id": "kuilen-schijndel",
+      "name": "Recreatieplas De Kuilen",
+      "categories": [
+        "water",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 18,
+        "km": 11
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=De+Kuilen+Schijndel",
+      "website": "https://www.google.com/search?q=de+kuilen+schijndel",
+      "description": "Recreatieplas met strandje. Vooral leuk in de zomer."
+    },
+    {
+      "id": "drongelens-kanaal",
+      "name": "Fietsen langs het Drongelens Kanaal",
+      "categories": [
+        "nature",
+        "free",
+        "water"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 40,
+        "carMin": 18,
+        "km": 12
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Drongelens+Kanaal",
+      "website": "https://www.routeyou.com/nl-nl/route/view/13007",
+      "description": "Kalm fietspad langs het kanaal. Geschikt voor met de bakfiets."
+    },
+    {
+      "id": "veghel-markt",
+      "name": "Markt Veghel",
+      "categories": [
+        "markets",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 50,
+        "carMin": 22,
+        "km": 14
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Markt+Veghel",
+      "website": "https://www.meierijstad.nl/",
+      "description": "Wekelijkse markt op zaterdag in het centrum van Veghel."
+    },
+    {
+      "id": "ballorig-veghel",
+      "name": "Ballorig Veghel",
+      "categories": [
+        "indoor",
+        "playground"
+      ],
+      "free": false,
+      "priceText": "vanaf €11 p.p.",
+      "distance": {
+        "bikeMin": 60,
+        "carMin": 25,
+        "km": 14
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Ballorig+Veghel",
+      "website": "https://www.ballorig.nl/",
+      "description": "Overdekte speelhal. Klimtoestellen, ballenbak, glijbanen. Top bij regen."
+    },
+    {
+      "id": "maashorst",
+      "name": "Natuurgebied De Maashorst",
+      "categories": [
+        "nature",
+        "free",
+        "animals"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 70,
+        "carMin": 25,
+        "km": 18
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=De+Maashorst",
+      "website": "https://www.demaashorst.nl/",
+      "description": "Groot natuurgebied met wisenten, taurossen en runderen. Verschillende kindvriendelijke routes."
+    },
+    {
+      "id": "kampina",
+      "name": "Natuurgebied Kampina",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 70,
+        "carMin": 25,
+        "km": 17
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Kampina+natuurgebied",
+      "website": "https://www.natuurmonumenten.nl/natuurgebieden/kampina-en-oisterwijkse-vennen",
+      "description": "Heide, vennen en bos. Verschillende kindvriendelijke wandelroutes."
+    },
+    {
+      "id": "oisterwijkse-vennen",
+      "name": "Oisterwijkse Vennen",
+      "categories": [
+        "nature",
+        "free",
+        "water"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 75,
+        "carMin": 28,
+        "km": 20
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Oisterwijkse+Vennen",
+      "website": "https://www.natuurmonumenten.nl/natuurgebieden/kampina-en-oisterwijkse-vennen",
+      "description": "Mooie vennen omringd door bos. Vlakke paden, kinderwagen-vriendelijk."
+    },
+    {
+      "id": "leijpark-tilburg",
+      "name": "Leijpark Tilburg",
+      "categories": [
+        "nature",
+        "playground",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 100,
+        "carMin": 35,
+        "km": 30
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Leijpark+Tilburg",
+      "website": "https://www.tilburg.nl/",
+      "description": "Stadspark met speeltuin, vijver en wandelpaden. Mooie open ruimte."
+    },
+    {
+      "id": "oliemeulen",
+      "name": "De Oliemeulen Tilburg",
+      "categories": [
+        "animals",
+        "indoor"
+      ],
+      "free": false,
+      "priceText": "vanaf €14 p.p.",
+      "distance": {
+        "bikeMin": 110,
+        "carMin": 35,
+        "km": 30
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=De+Oliemeulen+Tilburg",
+      "website": "https://www.deoliemeulen.nl/",
+      "description": "Klein dierentuintje met reptielen, vogels en knaagdieren. Indoor, dus regenproof."
+    },
+    {
+      "id": "klein-zwitserland",
+      "name": "Speelpark Klein Zwitserland",
+      "categories": [
+        "playground"
+      ],
+      "free": false,
+      "priceText": "vanaf €13 p.p.",
+      "distance": {
+        "bikeMin": 110,
+        "carMin": 35,
+        "km": 35
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Speelpark+Klein+Zwitserland",
+      "website": "https://www.kleinzwitserland.com/",
+      "description": "Bos- en speelpark in Brabant. Klassieker voor families. Veel speeltoestellen."
+    },
+    {
+      "id": "loonse-duinen",
+      "name": "De Loonse en Drunense Duinen",
+      "categories": [
+        "nature",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "distance": {
+        "bikeMin": 80,
+        "carMin": 30,
+        "km": 25
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Loonse+en+Drunense+Duinen",
+      "website": "https://www.np-duinenenmaasland.nl/",
+      "description": "De 'Brabantse Sahara'. Heerlijk uitwaaien op de zandvlakte. Schoenen worden vies, kinderen blij."
+    },
+    {
+      "id": "beekse-bergen-safari",
+      "name": "Safaripark Beekse Bergen",
+      "categories": [
+        "animals"
+      ],
+      "free": false,
+      "priceText": "vanaf €25,50 p.p.",
+      "distance": {
+        "bikeMin": 110,
+        "carMin": 35,
+        "km": 38
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Safaripark+Beekse+Bergen",
+      "website": "https://www.beeksebergen.nl/safaripark",
+      "description": "Safari met de auto, te voet of met de bus. Olifanten, giraffes, leeuwen. Speelparadijs aanwezig."
+    },
+    {
+      "id": "speelland-beekse",
+      "name": "Speelland Beekse Bergen",
+      "categories": [
+        "playground",
+        "water"
+      ],
+      "free": false,
+      "priceText": "vanaf €18 p.p.",
+      "distance": {
+        "bikeMin": 110,
+        "carMin": 35,
+        "km": 38
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Speelland+Beekse+Bergen",
+      "website": "https://www.beeksebergen.nl/speelland",
+      "description": "Apart speelpark naast het safaripark. Glijbanen, water, klimtoestellen. Top voor toddlers."
+    },
+    {
+      "id": "efteling",
+      "name": "De Efteling",
+      "categories": [
+        "events"
+      ],
+      "free": false,
+      "priceText": "vanaf €44 p.p.",
+      "distance": {
+        "bikeMin": 100,
+        "carMin": 35,
+        "km": 32
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Efteling+Kaatsheuvel",
+      "website": "https://www.efteling.com/nl",
+      "description": "Sprookjesbos en zachte attracties zijn al leuk voor peuters. Plan rust en kom vroeg."
+    },
+    {
+      "id": "billybird-hemelrijk",
+      "name": "BillyBird Park Hemelrijk",
+      "categories": [
+        "playground",
+        "water"
+      ],
+      "free": false,
+      "priceText": "vanaf €17,50 p.p.",
+      "distance": {
+        "bikeMin": 110,
+        "carMin": 35,
+        "km": 32
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=BillyBird+Park+Hemelrijk+Volkel",
+      "website": "https://www.billybird.nl/hemelrijk/",
+      "description": "Familiepark met speeltuin, dieren en zwemmen. Veel voor kleintjes."
+    },
+    {
+      "id": "dippie-doe",
+      "name": "Dippie Doe Familiepark",
+      "categories": [
+        "indoor",
+        "playground"
+      ],
+      "free": false,
+      "priceText": "vanaf €13,95 p.p.",
+      "distance": {
+        "bikeMin": 130,
+        "carMin": 40,
+        "km": 35
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Dippie+Doe+Best",
+      "website": "https://www.dippiedoe.nl/",
+      "description": "Overdekt familiepark met klimtoestellen, glijbanen en zachte attracties. Ideaal bij regen."
+    },
+    {
+      "id": "dierenrijk-nuenen",
+      "name": "Dierenrijk Nuenen",
+      "categories": [
+        "animals"
+      ],
+      "free": false,
+      "priceText": "vanaf €18 p.p.",
+      "distance": {
+        "bikeMin": 120,
+        "carMin": 40,
+        "km": 35
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Dierenrijk+Nuenen",
+      "website": "https://www.dierenrijk.nl/",
+      "description": "Dierenpark met giraffes, lemuren, stokstaartjes. Goede speeltuin."
+    },
+    {
+      "id": "kasteel-heeze",
+      "name": "Kasteel Heeze (park)",
+      "categories": [
+        "nature",
+        "free",
+        "culture"
+      ],
+      "free": true,
+      "priceText": "Park gratis",
+      "distance": {
+        "bikeMin": 130,
+        "carMin": 45,
+        "km": 40
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Kasteel+Heeze",
+      "website": "https://www.kasteelheeze.nl/",
+      "description": "Park rondom het kasteel is gratis te bezoeken. Wandelen, eendjes spotten."
+    },
+    {
+      "id": "speelpark-leijen",
+      "name": "Speelpark De Leijen",
+      "categories": [
+        "playground"
+      ],
+      "free": false,
+      "priceText": "vanaf €8 p.p.",
+      "distance": {
+        "bikeMin": 90,
+        "carMin": 30,
+        "km": 25
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Speelpark+De+Leijen",
+      "website": "https://www.google.com/search?q=speelpark+de+leijen",
+      "description": "Outdoor speelpark in Brabant. Verifieer adres en openingstijden."
+    },
+    {
+      "id": "sprookjesbos-valkenswaard",
+      "name": "Sprookjesbos Valkenswaard",
+      "categories": [
+        "events",
+        "playground"
+      ],
+      "free": false,
+      "priceText": "vanaf €11 p.p.",
+      "distance": {
+        "bikeMin": 150,
+        "carMin": 50,
+        "km": 50
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Sprookjesbos+Valkenswaard",
+      "website": "https://www.sprookjesbos.nl/",
+      "description": "Klein, ouderwets sprookjespark. Perfect voor jonge kinderen die nog niet aan grote attracties toe zijn."
+    },
+    {
+      "id": "bevrijdingsfestival-2026",
+      "name": "Bevrijdingsfestival Brabant - Familie Vrijheidsplein",
+      "categories": [
+        "events",
+        "culture",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "startDate": "2026-05-05",
+      "endDate": "2026-05-05",
+      "when": "Dinsdag 5 mei, 11:00 - 23:30",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Pettelaarse+Schans+Den+Bosch",
+      "website": "https://www.kidsproof.nl/denbosch/uitje/stichting-noord-zuid-bevrijdingsfestival-bevrijdingsfestival-denbosch-petelaar-5mei-kids/",
+      "description": "Familie Vrijheidsplein op de Pettelaarse Schans. Workshops, voorleestent, kinderactiviteiten. Toegang gratis."
+    },
+    {
+      "id": "letterspeurtocht-mei-2026",
+      "name": "Letterspeurtocht Maria Meimaand",
+      "categories": [
+        "culture",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-31",
+      "when": "Hele meimaand 2026",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=centrum+Den+Bosch",
+      "website": "https://www.kidsproof.nl/denbosch/uitje/gratis-speurtocht-den-bosch-mei/",
+      "description": "Gratis speurtocht door het centrum van Den Bosch. Mooie wandeling met de hele familie. Alleen in mei."
+    },
+    {
+      "id": "kermis-middelrode-2026",
+      "name": "Kermis Middelrode",
+      "categories": [
+        "events"
+      ],
+      "free": false,
+      "priceText": "Toegang gratis, attracties betaald",
+      "startDate": "2026-05-08",
+      "endDate": "2026-05-11",
+      "when": "Rond 2e zondag mei (10 mei)",
+      "distance": {
+        "bikeMin": 8,
+        "carMin": 5,
+        "km": 2
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Middelrode+kermis",
+      "website": "https://www.weekblad-debrug.nl/agenda",
+      "description": "Jaarlijkse dorpskermis vlakbij Berlicum. Kleine attracties, perfect voor de allerkleinsten."
+    },
+    {
+      "id": "bosch-parade-2026",
+      "name": "Bosch Parade 2026",
+      "categories": [
+        "culture",
+        "water",
+        "events",
+        "free"
+      ],
+      "free": true,
+      "priceText": "Gratis kijken vanaf de kant",
+      "startDate": "2026-06-18",
+      "endDate": "2026-06-20",
+      "when": "18-20 juni",
+      "distance": {
+        "bikeMin": 35,
+        "carMin": 15,
+        "km": 10
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Bosch+Parade+Den+Bosch",
+      "website": "https://www.boschparade.nl/",
+      "description": "Drijvende kunstparade door de Binnendieze. Visueel spektakel - mooi voor jong en oud. Verifieer tijden via website."
+    },
+    {
+      "id": "pinksteren-beekse-2026",
+      "name": "Pinksteren bij Safaripark Beekse Bergen",
+      "categories": [
+        "animals",
+        "events"
+      ],
+      "free": false,
+      "priceText": "vanaf €25,50 p.p.",
+      "startDate": "2026-05-22",
+      "endDate": "2026-05-25",
+      "when": "Pinksterweekend, 22-25 mei",
+      "distance": {
+        "bikeMin": 110,
+        "carMin": 35,
+        "km": 38
+      },
+      "googleMaps": "https://www.google.com/maps/search/?api=1&query=Safaripark+Beekse+Bergen",
+      "website": "https://www.beeksebergen.nl/",
+      "description": "Vaak extra activiteiten en shows tijdens lang weekend. Verifieer programma via de website."
+    }
+  ]
+}
+</script>
+
+<script>
+// ---------- WEER (Open-Meteo, geen API key nodig) ----------
+const WMO = {
+  0:  { icon: "☀️", label: "Helder" },
+  1:  { icon: "🌤️", label: "Vooral helder" },
+  2:  { icon: "⛅", label: "Deels bewolkt" },
+  3:  { icon: "☁️", label: "Bewolkt" },
+  45: { icon: "🌫️", label: "Mistig" },
+  48: { icon: "🌫️", label: "Mistig" },
+  51: { icon: "🌦️", label: "Lichte motregen" },
+  53: { icon: "🌦️", label: "Motregen" },
+  55: { icon: "🌧️", label: "Stevige motregen" },
+  61: { icon: "🌧️", label: "Lichte regen" },
+  63: { icon: "🌧️", label: "Regen" },
+  65: { icon: "🌧️", label: "Stevige regen" },
+  71: { icon: "🌨️", label: "Lichte sneeuw" },
+  73: { icon: "🌨️", label: "Sneeuw" },
+  75: { icon: "❄️", label: "Veel sneeuw" },
+  80: { icon: "🌦️", label: "Buien" },
+  81: { icon: "🌧️", label: "Stevige buien" },
+  82: { icon: "⛈️", label: "Hevige buien" },
+  95: { icon: "⛈️", label: "Onweer" },
+  96: { icon: "⛈️", label: "Onweer met hagel" },
+  99: { icon: "⛈️", label: "Zwaar onweer" }
+};
+
+async function loadWeather(lat, lon) {
+  const out = document.getElementById("weather");
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Europe%2FAmsterdam&forecast_days=2`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    const labels = ["Vandaag", "Morgen"];
+    out.innerHTML = labels.map((lab, i) => {
+      const code = d.daily.weathercode[i];
+      const max = Math.round(d.daily.temperature_2m_max[i]);
+      const min = Math.round(d.daily.temperature_2m_min[i]);
+      const w = WMO[code] || { icon: "❓", label: "" };
+      return `
+        <div class="weather-day">
+          <div class="weather-label">${lab}</div>
+          <div class="weather-temp"><span class="weather-icon">${w.icon}</span>${max}°</div>
+          <div class="weather-desc">${w.label} · min ${min}°</div>
+        </div>`;
+    }).join("");
+  } catch (e) {
+    const isFile = location.protocol === "file:";
+    const msg = isFile
+      ? "Het weer wordt geladen zodra de pagina online staat."
+      : "Weer kon niet geladen worden.";
+    out.innerHTML = `<div class="weather-day" style="grid-column: 1 / -1;"><div class="weather-error">${msg}</div></div>`;
+  }
+}
+
+// ---------- DATUM-LOGICA ----------
+const HORIZON_DAYS = 60;
+
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function horizonISO() {
+  return new Date(Date.now() + HORIZON_DAYS * 86400000).toISOString().slice(0, 10);
+}
+
+// Een activiteit is relevant als:
+// - geen datum: altijd
+// - met datum: vandaag tot horizon valt binnen [startDate, endDate]
+function isCurrentlyRelevant(a) {
+  if (!a.startDate && !a.endDate) return true;
+  const today = todayISO();
+  const horizon = horizonISO();
+  if (a.endDate && a.endDate < today) return false;       // verleden
+  if (a.startDate && a.startDate > horizon) return false; // te ver in toekomst
+  return true;
+}
+
+function isDated(a) {
+  return Boolean(a.startDate || a.endDate);
+}
+
+function formatDateNL(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+}
+
+function whenLabel(a) {
+  if (a.when) return a.when;
+  if (a.startDate && a.endDate) {
+    return formatDateNL(a.startDate) + " – " + formatDateNL(a.endDate);
+  }
+  if (a.startDate) return "Vanaf " + formatDateNL(a.startDate);
+  if (a.endDate)   return "Tot " + formatDateNL(a.endDate);
+  return "";
+}
+
+// ---------- RENDER ----------
+let DATA = null;
+let activeFilter = "all";
+
+// Emoji per activiteit op basis van primaire categorie
+const EMOJI_PRIORITY = ["events","animals","playground","markets","culture","water","indoor","nature"];
+function activityEmoji(a) {
+  for (const id of EMOJI_PRIORITY) {
+    if ((a.categories || []).includes(id)) {
+      const cat = DATA.categories.find(c => c.id === id);
+      if (cat) return cat.icon;
+    }
+  }
+  return "🌟";
+}
+
+function priceBlock(a) {
+  if (a.free) return `<div class="price free">GRATIS</div>`;
+  return `<div class="price">${a.priceText || "Betaald"}</div>`;
+}
+function distanceBlock(a) {
+  const km = a.distance.km != null ? `<span>🛣️ ${a.distance.km} km</span>` : "";
+  return `
+    <div class="meta">
+      ${km}
+      <span>🚲 ${a.distance.bikeMin} min</span>
+      <span>🚗 ${a.distance.carMin} min</span>
+    </div>`;
+}
+function tagsBlock(a, cats) {
+  const labels = (a.categories || [])
+    .map(id => cats.find(c => c.id === id))
+    .filter(c => c && c.id !== "free")
+    .map(c => `<span class="tag">${c.icon} ${c.label}</span>`)
+    .join("");
+  return labels ? `<div class="tags">${labels}</div>` : "";
+}
+function linksBlock(a) {
+  return `
+    <div class="links">
+      <a href="${a.googleMaps}" target="_blank" rel="noopener">📍 Routebeschrijving</a>
+      ${a.website ? `<a href="${a.website}" target="_blank" rel="noopener">🌐 Website</a>` : ""}
+    </div>`;
+}
+
+function renderCards() {
+  const out = document.getElementById("cards");
+  // Filter 1: hide stale/distant-future dated items
+  let list = DATA.activities.filter(isCurrentlyRelevant);
+  // Filter 2: apply chip
+  if (activeFilter === "binnenkort") {
+    list = list.filter(isDated);
+  } else if (activeFilter !== "all") {
+    list = list.filter(a => (a.categories || []).includes(activeFilter));
+  }
+  // Sort
+  list = [...list].sort((a, b) => {
+    if (activeFilter === "binnenkort") {
+      return (a.startDate || "9999").localeCompare(b.startDate || "9999");
+    }
+    if (activeFilter === "all") {
+      // Dated upcoming first, then free, then by drive time
+      if (isDated(a) !== isDated(b)) return isDated(a) ? -1 : 1;
+      if (a.free !== b.free) return a.free ? -1 : 1;
+    }
+    return a.distance.carMin - b.distance.carMin;
+  });
+
+  // Section heading
+  const title = document.getElementById("cardsTitle");
+  if (activeFilter === "binnenkort") title.innerHTML = "🕒 Binnenkort";
+  else if (activeFilter === "all") title.innerHTML = "🌟 Activiteiten";
+  else {
+    const cat = DATA.categories.find(c => c.id === activeFilter);
+    title.innerHTML = (cat ? cat.icon + " " + cat.label : "Activiteiten");
+  }
+
+  if (list.length === 0) {
+    const msg = activeFilter === "binnenkort"
+      ? "Geen aankomende speciale evenementen gevonden. Check volgende week opnieuw."
+      : "Geen activiteiten gevonden voor deze filter.";
+    out.innerHTML = `<div class="empty">${msg}</div>`;
+    return;
+  }
+
+  out.innerHTML = list.map(a => {
+    const dated = isDated(a);
+    return `
+      <article class="card ${dated ? "dated" : ""}">
+        ${dated ? `<div class="when-badge">🕒 ${whenLabel(a)}</div>` : ""}
+        <h3 class="card-name">${activityEmoji(a)} ${a.name}</h3>
+        ${priceBlock(a)}
+        ${distanceBlock(a)}
+        <p class="desc">${a.description}</p>
+        ${tagsBlock(a, DATA.categories)}
+        ${linksBlock(a)}
+      </article>
+    `;
+  }).join("");
+}
+
+function renderFilters() {
+  const out = document.getElementById("filters");
+  out.innerHTML = DATA.categories.map(c => `
+    <button class="chip ${c.id === "binnenkort" ? "binnenkort" : ""} ${c.id === activeFilter ? "active" : ""}" data-id="${c.id}">
+      ${c.icon} ${c.label}
+    </button>
+  `).join("");
+  out.querySelectorAll(".chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeFilter = btn.dataset.id;
+      renderFilters();
+      renderCards();
+    });
+  });
+}
+
+function formatDate(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function loadActivities() {
+  try {
+    DATA = JSON.parse(document.getElementById("eventsData").textContent);
+    document.getElementById("place").textContent = DATA.origin.name;
+    const visible = DATA.activities.filter(isCurrentlyRelevant).length;
+    document.getElementById("updated").textContent =
+      "Laatst bijgewerkt: " + formatDate(DATA.lastUpdated) + " · " + visible + " activiteiten";
+    renderFilters();
+    renderCards();
+    loadWeather(DATA.origin.lat, DATA.origin.lon);
+  } catch (e) {
+    console.error(e);
+    document.getElementById("cards").innerHTML = `<div class="empty">Kon activiteiten niet laden.</div>`;
+  }
+}
+
+loadActivities();
+</script>
+</body>
+</html>
